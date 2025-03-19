@@ -70,4 +70,12 @@ public class GridManager : MonoBehaviour
             }
         }
     }
+
+    public Vector3 GetWorldPosition(int x, int y)
+    {
+        Vector3 worldBottomLeft = transform.position - Vector3.right * gridWorldSize.x / 2 - Vector3.forward * gridWorldSize.y / 2;
+        return worldBottomLeft +
+            Vector3.right * (x * nodeDiameter + nodeRadius) +
+            Vector3.forward * (y * nodeDiameter + nodeRadius);
+    }
 }
