@@ -15,6 +15,8 @@ public class PlayerController : MonoBehaviour
     private float verticalVelocity = 0f;
     private float verticalRotation = 0f;
 
+    [HideInInspector] public bool hasBattery = false;
+
     void Start()
     {
         controller = GetComponent<CharacterController>();
