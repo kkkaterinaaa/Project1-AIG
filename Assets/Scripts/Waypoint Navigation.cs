@@ -2,13 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class WaypointNavigation: MonoBehaviour
+public class WaypointNavigation : MonoBehaviour
 {
     public enum AIState { Patrol, Chase, Return }
 
     [Header("A* Pathfinding")]
     public AStarPathfinder pathfinder;
-    public GridManager gridManager;
+    public GridManager gridManager; // Used for A* path calculation during chase/return
     private List<Vector3> currentPath = new List<Vector3>();
     private int currentWaypointIndex = 0;
 
@@ -28,10 +28,8 @@ public class WaypointNavigation: MonoBehaviour
     public LayerMask obstacleMask;
     public float avoidanceRotation = 30f;
 
-    [Header("Grid-based Waypoints")]
-    public Vector2Int[] gridWaypoints;
-    private List<Vector3> patrolPoints = new List<Vector3>();
-    private int currentPatrolIndex = 0;
+    [Header("Waypoints (Empty Objects)")]
+    public Transform[] waypoints; 
 
     [Header("Animation")]
     private Animator animator;
@@ -41,24 +39,22 @@ public class WaypointNavigation: MonoBehaviour
     private float chaseTimer = 0f;
     private Vector3 lastKnownPosition;
     private bool hasLostPlayer = false;
+    private Vector3 lastPosition;
+    private float stuckTimer = 0f;
+    private float stuckThreshold = 2f; // seconds
 
     void Start()
     {
         animator = GetComponent<Animator>();
-        InitializePatrolPoints();
 
-        if (patrolPoints.Count > 0)
+        if (waypoints.Length > 0)
         {
-            UpdatePath(patrolPoints[currentPatrolIndex]);
+            // Start patrolling toward the first waypoint
+            UpdatePath(waypoints[currentWaypointIndex].position);
         }
-    }
-
-    void InitializePatrolPoints()
-    {
-        foreach (Vector2Int wp in gridWaypoints)
+        else
         {
-            Vector3 worldPos = gridManager.GetWorldPosition(wp.x, wp.y);
-            patrolPoints.Add(worldPos);
+            Debug.LogError("No waypoints assigned.");
         }
     }
 
@@ -85,16 +81,17 @@ public class WaypointNavigation: MonoBehaviour
     {
         FollowPath();
 
+        // Once the path is complete, move to the next waypoint and update the path
         if (currentPath.Count == 0 || currentWaypointIndex >= currentPath.Count)
         {
-            GetNextPatrolPoint();
-            UpdatePath(patrolPoints[currentPatrolIndex]);
+            GetNextWaypoint();
+            UpdatePath(waypoints[currentWaypointIndex].position);
         }
     }
 
-    private void GetNextPatrolPoint()
+    private void GetNextWaypoint()
     {
-        currentPatrolIndex = (currentPatrolIndex + 1) % patrolPoints.Count;
+        currentWaypointIndex = (currentWaypointIndex + 1) % waypoints.Length;
     }
 
     private void LookForPlayer()
@@ -150,22 +147,22 @@ public class WaypointNavigation: MonoBehaviour
     private void StartReturn()
     {
         currentState = AIState.Return;
-        if (patrolPoints.Count > 0)
+        if (waypoints.Length > 0)
         {
-            int nearestIndex = GetNearestPatrolPointIndex();
-            currentPatrolIndex = nearestIndex;
-            UpdatePath(patrolPoints[nearestIndex]);
+            int nearestIndex = GetNearestWaypointIndex();
+            currentWaypointIndex = nearestIndex;
+            UpdatePath(waypoints[nearestIndex].position);
         }
     }
 
-    private int GetNearestPatrolPointIndex()
+    private int GetNearestWaypointIndex()
     {
         int nearestIndex = 0;
-        float minDistance = Vector3.Distance(transform.position, patrolPoints[0]);
+        float minDistance = Vector3.Distance(transform.position, waypoints[0].position);
 
-        for (int i = 1; i < patrolPoints.Count; i++)
+        for (int i = 1; i < waypoints.Length; i++)
         {
-            float distance = Vector3.Distance(transform.position, patrolPoints[i]);
+            float distance = Vector3.Distance(transform.position, waypoints[i].position);
             if (distance < minDistance)
             {
                 minDistance = distance;
@@ -188,9 +185,9 @@ public class WaypointNavigation: MonoBehaviour
     private void ResumePatrol()
     {
         currentState = AIState.Patrol;
-        if (patrolPoints.Count > 0)
+        if (waypoints.Length > 0)
         {
-            UpdatePath(patrolPoints[currentPatrolIndex]);
+            UpdatePath(waypoints[currentWaypointIndex].position);
         }
     }
 
@@ -204,9 +201,10 @@ public class WaypointNavigation: MonoBehaviour
     {
         if (currentPath == null || currentPath.Count == 0 || currentWaypointIndex >= currentPath.Count)
         {
-            UpdateAnimation(false);
+            //UpdateAnimation(false);
             return;
         }
+        UpdateAnimation(true);
 
         Vector3 waypoint = currentPath[currentWaypointIndex];
         waypoint.y = transform.position.y;
@@ -217,13 +215,43 @@ public class WaypointNavigation: MonoBehaviour
             currentWaypointIndex++;
             if (currentWaypointIndex >= currentPath.Count)
             {
-                UpdateAnimation(false);
+                //UpdateAnimation(false);
                 return;
             }
+            waypoint = currentPath[currentWaypointIndex];
+            waypoint.y = transform.position.y;
         }
 
-        MoveTowardsTarget(waypoint);
+        lastPosition = transform.position;
+
+        MoveTowardsWaypoint(waypoint);
     }
+
+    private void MoveTowardsWaypoint(Vector3 target)
+    {
+        Vector3 direction = (target - transform.position);
+        float distance = direction.magnitude;
+        direction.Normalize();
+
+        // Arrive behavior: decelerate when close to the waypoint.
+        float decelerationDistance = 2f; // Adjust as needed
+        float speedFactor = 1f;
+        if (distance < decelerationDistance)
+        {
+            speedFactor = distance / decelerationDistance;
+        }
+
+        // Calculate the desired velocity (seek behavior)
+        Vector3 desiredVelocity = direction * movementSpeed * speedFactor;
+        // Apply simple movement: no physics in this case
+        transform.position = Vector3.MoveTowards(transform.position, target, desiredVelocity.magnitude * Time.deltaTime);
+
+        float rotationStep = rotationSpeed * Time.deltaTime;
+        Vector3 newDirection = Vector3.RotateTowards(transform.forward, direction, rotationStep, 0.0f);
+        transform.rotation = Quaternion.LookRotation(newDirection);
+        //UpdateAnimation(desiredVelocity.magnitude > 0.1f);
+    }
+
 
     private void MoveTowardsTarget(Vector3 target)
     {
@@ -239,17 +267,10 @@ public class WaypointNavigation: MonoBehaviour
         Vector3 newDirection = Vector3.RotateTowards(transform.forward, direction, rotationStep, 0.0f);
         transform.rotation = Quaternion.LookRotation(newDirection);
 
-        // Move only if facing the target direction correctly
-        float angleDifference = Vector3.Angle(transform.forward, direction);
-        if (angleDifference < 2f) // Only move when almost aligned with the target
-        {
-            transform.position += transform.forward * movementSpeed * Time.deltaTime;
-            UpdateAnimation(true);
-        }
-        else
-        {
-            UpdateAnimation(false); // Idle while rotating
-        }
+
+        transform.position += transform.forward * movementSpeed * Time.deltaTime;
+        UpdateAnimation(true);
+
     }
 
     private bool CheckObstacleInPath(out Vector3 avoidanceDirection)
@@ -302,5 +323,4 @@ public class WaypointNavigation: MonoBehaviour
             Gizmos.DrawWireSphere(transform.position, detectionRadius);
         }
     }
-
 }
