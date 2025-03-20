@@ -2607,21 +2607,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 04d6c9fe9d2dac34c8c8261f74e26858, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pathfinder: {fileID: 0}
-  gridManager: {fileID: 0}
   waypoints: []
-  movementSpeed: 3.5
-  rotationSpeed: 5
+  pathfinder: {fileID: 0}
+  pathUpdateInterval: 1
   waypointThreshold: 0.5
+  chaseTimeout: 5
+  playerTag: Player
   player: {fileID: 0}
   detectionRadius: 10
   viewAngle: 45
-  chaseTimeout: 5
-  obstacleDetectionDistance: 2
-  obstacleMask:
-    serializedVersion: 2
-    m_Bits: 0
-  avoidanceRotation: 30
+  patrolSpeed: 3.5
+  chaseSpeed: 3
+  rotationSpeed: 5
+  chaseRotSpeed: 120
+  stoppingDistance: 3
+  homeArrivalThreshold: 1
 --- !u!1 &7246492691536284944
 GameObject:
   m_ObjectHideFlags: 0
