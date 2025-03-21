@@ -2670,9 +2670,10 @@ GameObject:
   - component: {fileID: 6176081030812680308}
   - component: {fileID: 1443458955936998722}
   - component: {fileID: 3995359332114117982}
+  - component: {fileID: 1715981968568667172}
   m_Layer: 0
   m_Name: Security
-  m_TagString: Guard
+  m_TagString: Security
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2740,6 +2741,27 @@ MonoBehaviour:
   rotSpeed: 180
   stoppingDistance: 3
   homeArrivalThreshold: 1
+--- !u!65 &1715981968568667172
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5786488692065332904}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.14, y: 0.14, z: 0.14}
+  m_Center: {x: 0, y: 0.05, z: 0}
 --- !u!1 &5833004756736869075
 GameObject:
   m_ObjectHideFlags: 0

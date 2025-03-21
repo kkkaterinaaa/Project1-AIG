@@ -104,7 +104,7 @@ public class GuardSwarm : MonoBehaviour
         Vector3 force = (_player.position - transform.position).normalized * chaseAttractionStrength;
         if (avoidOtherGuards)
         {
-            GameObject[] guards = GameObject.FindGameObjectsWithTag("Guard");
+            GameObject[] guards = GameObject.FindGameObjectsWithTag("Security");
             foreach (GameObject guard in guards)
             {
                 if (guard == this.gameObject)

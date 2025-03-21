@@ -144,6 +144,7 @@ public class GuardController : MonoBehaviour
         }
     }
 
+
     List<Vector3> FindDijkstraPath(Vector3 start, Vector3 target)
     {
         Node startNode = guardChase.pathfinder.gridManager.NodeFromWorldPoint(start);
