@@ -5710,6 +5710,26 @@ PrefabInstance:
       propertyPath: gridWaypoints.Array.size
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 8111111429960173930, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
+      propertyPath: patrolWaypoints.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 8111111429960173930, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
+      propertyPath: patrolWaypoints.Array.data[0]
+      value: 
+      objectReference: {fileID: 238961606}
+    - target: {fileID: 8111111429960173930, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
+      propertyPath: patrolWaypoints.Array.data[1]
+      value: 
+      objectReference: {fileID: 948484366}
+    - target: {fileID: 8111111429960173930, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
+      propertyPath: patrolWaypoints.Array.data[2]
+      value: 
+      objectReference: {fileID: 1252599721}
+    - target: {fileID: 8111111429960173930, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
+      propertyPath: patrolWaypoints.Array.data[3]
+      value: 
+      objectReference: {fileID: 123669862}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -13132,6 +13152,26 @@ PrefabInstance:
       propertyPath: gridWaypoints.Array.size
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 8111111429960173930, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
+      propertyPath: patrolWaypoints.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 8111111429960173930, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
+      propertyPath: patrolWaypoints.Array.data[0]
+      value: 
+      objectReference: {fileID: 963058535}
+    - target: {fileID: 8111111429960173930, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
+      propertyPath: patrolWaypoints.Array.data[1]
+      value: 
+      objectReference: {fileID: 1338506645}
+    - target: {fileID: 8111111429960173930, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
+      propertyPath: patrolWaypoints.Array.data[2]
+      value: 
+      objectReference: {fileID: 683100440}
+    - target: {fileID: 8111111429960173930, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
+      propertyPath: patrolWaypoints.Array.data[3]
+      value: 
+      objectReference: {fileID: 1937992551}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -14108,6 +14148,30 @@ PrefabInstance:
       propertyPath: waypoints.Array.data[5]
       value: 
       objectReference: {fileID: 1956137970}
+    - target: {fileID: 8111111429960173930, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
+      propertyPath: guardChase
+      value: 
+      objectReference: {fileID: 1406038033}
+    - target: {fileID: 8111111429960173930, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
+      propertyPath: patrolWaypoints.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 8111111429960173930, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
+      propertyPath: patrolWaypoints.Array.data[0]
+      value: 
+      objectReference: {fileID: 624229523}
+    - target: {fileID: 8111111429960173930, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
+      propertyPath: patrolWaypoints.Array.data[1]
+      value: 
+      objectReference: {fileID: 1956137970}
+    - target: {fileID: 8111111429960173930, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
+      propertyPath: patrolWaypoints.Array.data[2]
+      value: 
+      objectReference: {fileID: 1215125157}
+    - target: {fileID: 8111111429960173930, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
+      propertyPath: patrolWaypoints.Array.data[3]
+      value: 
+      objectReference: {fileID: 1604188480}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -14118,6 +14182,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7001451046519971031, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
   m_PrefabInstance: {fileID: 1406038031}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1406038033 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4365704487975801080, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
+  m_PrefabInstance: {fileID: 1406038031}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa2d5c1735e0142d9a7c8d6afb104d3b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1427982499
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -14452,6 +14527,22 @@ PrefabInstance:
       propertyPath: gridWaypoints.Array.size
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 8111111429960173930, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
+      propertyPath: patrolWaypoints.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 8111111429960173930, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
+      propertyPath: patrolWaypoints.Array.data[0]
+      value: 
+      objectReference: {fileID: 257896740}
+    - target: {fileID: 8111111429960173930, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
+      propertyPath: patrolWaypoints.Array.data[1]
+      value: 
+      objectReference: {fileID: 1919073972}
+    - target: {fileID: 8111111429960173930, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
+      propertyPath: patrolWaypoints.Array.data[2]
+      value: 
+      objectReference: {fileID: 1911903043}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -17079,6 +17170,30 @@ PrefabInstance:
       propertyPath: waypoints.Array.data[5]
       value: 
       objectReference: {fileID: 1956137970}
+    - target: {fileID: 8111111429960173930, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
+      propertyPath: guardChase
+      value: 
+      objectReference: {fileID: 1689023230}
+    - target: {fileID: 8111111429960173930, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
+      propertyPath: patrolWaypoints.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 8111111429960173930, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
+      propertyPath: patrolWaypoints.Array.data[0]
+      value: 
+      objectReference: {fileID: 844915765}
+    - target: {fileID: 8111111429960173930, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
+      propertyPath: patrolWaypoints.Array.data[1]
+      value: 
+      objectReference: {fileID: 862053654}
+    - target: {fileID: 8111111429960173930, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
+      propertyPath: patrolWaypoints.Array.data[2]
+      value: 
+      objectReference: {fileID: 1136303020}
+    - target: {fileID: 8111111429960173930, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
+      propertyPath: patrolWaypoints.Array.data[3]
+      value: 
+      objectReference: {fileID: 1373081464}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -17089,6 +17204,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7001451046519971031, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
   m_PrefabInstance: {fileID: 1689023228}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1689023230 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4365704487975801080, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
+  m_PrefabInstance: {fileID: 1689023228}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa2d5c1735e0142d9a7c8d6afb104d3b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1690607940
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class AStarPathfinder : MonoBehaviour
 {
-    GridManager gridManager;
+    public GridManager gridManager;
     
     void Awake(){
         gridManager = FindObjectOfType<GridManager>();

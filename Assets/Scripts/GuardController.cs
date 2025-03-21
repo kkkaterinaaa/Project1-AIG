@@ -4,347 +4,251 @@ using UnityEngine;
 
 public class GuardController : MonoBehaviour
 {
-    // Guard AI States
-    public enum AIState { Patrol, Chase, Return }
-    private AIState _currentState = AIState.Patrol;
-
-    #region Patrol Settings
     [Header("Patrol Settings")]
-    // Waypoints provided as empty GameObjects.
-    public Transform[] waypoints;
-    private List<Vector3> _patrolPoints = new List<Vector3>();
-    private int _currentPatrolIndex = 0;
-    #endregion
-
-    #region A* Pathfinding for Chase Mode
-    [Header("A* Pathfinding")]
-    public AStarPathfinder pathfinder;
-    public float pathUpdateInterval = 1f;  // How often to update the path when chasing
-    private List<Vector3> _currentPath = new List<Vector3>();
-    private int _currentWaypointIndex = 0;
+    public Transform[] patrolWaypoints;
+    public float patrolSpeed = 2f;
     public float waypointThreshold = 0.7f;
-    public float chaseTimeout = 5f;        // How long to chase if the player is lost
-    private float _chaseTimer = 0f;
-    private Vector3 _lastKnownPlayerPos;
-    private bool _hasLostPlayer = false;
-    #endregion
+    public float returnCooldownDuration = 5f;
 
-    #region Detection Settings
-    [Header("Detection")]
-    public string playerTag = "Player";
-    public Transform player;              // Can assign in Inspector or found via tag in Start()
-    public float detectionRadius = 10f;   // Horizontal detection range
-    public float viewAngle = 45f;         // Field-of-view for detection
-    #endregion
+    [Header("Chase Settings")]
+    public GuardChase guardChase;
 
-    #region Movement Settings
-    [Header("Movement")]
-    public float patrolSpeed = 3.5f;
-    public float chaseSpeed = 3f;
-    public float rotationSpeed = 5f;      // Used for patrol mode
-    public float chaseRotSpeed = 120f;    // Used in chase mode for faster turning
-    public float stoppingDistance = 3f;   // When chasing, if within this distance of the player, stop moving
-    public float homeArrivalThreshold = 1f; // When returning, if within this distance from patrol point, consider arrived
-    private Vector3 _velocity = Vector3.zero;
-    #endregion
-
-    #region Animation & Misc
     [Header("Animation")]
-    private Animator _animator;
-    private bool _isWalking = false;
-    #endregion
+    public Animator anim;
+
+    private int currentWaypointIndex = 0;
+    private Transform player;
+    private Vector3 lastSeenPlayerPosition;
+    private bool isChasing = false;
+    private bool isReturning = false;
+    private float timeOutOfSight = 0f;
+    private List<Vector3> currentPath = new List<Vector3>();
 
     void Start()
     {
-        // Locate the player if not assigned.
-        if (player == null)
-        {
-            GameObject pObj = GameObject.FindGameObjectWithTag(playerTag);
-            if (pObj != null)
-                player = pObj.transform;
-            else
-                Debug.LogWarning("Player with tag '" + playerTag + "' not found.");
-        }
-        _animator = GetComponent<Animator>();
-
-        // Initialize patrol points from the assigned empty GameObjects.
-        InitializePatrolPoints();
-        if (_patrolPoints.Count > 0)
-        {
-            // Start patrol from the first patrol point.
-            UpdatePath(_patrolPoints[_currentPatrolIndex]);
-        }
-        _currentState = AIState.Patrol;
-    }
-
-    // Populate _patrolPoints from the positions of the empty waypoint objects.
-    void InitializePatrolPoints()
-    {
-        _patrolPoints.Clear();
-        foreach (Transform wp in waypoints)
-        {
-            _patrolPoints.Add(wp.position);
-        }
+        player = GameObject.FindGameObjectWithTag(guardChase.playerTag).transform;
+        anim.SetBool("Walk_Anim", true);
+        StartPatrolling();
     }
 
     void Update()
     {
-        if (player == null)
-            return;
-
-        // State management: Patrol, Chase, or Return.
-        switch (_currentState)
+        if (isChasing)
         {
-            case AIState.Patrol:
-                PatrolUpdate();
-                LookForPlayer();
-                break;
-            case AIState.Chase:
-                ChaseUpdate();
-                break;
-            case AIState.Return:
-                ReturnUpdate();
-                break;
-        }
-
-        // Apply movement.
-        transform.position += _velocity * Time.deltaTime;
-        SnapToGround();
-    }
-
-    #region Patrol Behavior
-    void PatrolUpdate()
-    {
-        // Follow the current patrol path.
-        FollowPath(patrolSpeed, rotationSpeed);
-        // When the path is complete, move to the next patrol point.
-        if (_currentPath == null || _currentWaypointIndex >= _currentPath.Count)
-        {
-            _currentPatrolIndex = (_currentPatrolIndex + 1) % _patrolPoints.Count;
-            UpdatePath(_patrolPoints[_currentPatrolIndex]);
-        }
-    }
-
-    // Check if the player is within detection range and view angle.
-    void LookForPlayer()
-    {
-        Vector3 flatGuardPos = new Vector3(transform.position.x, 0, transform.position.z);
-        Vector3 flatPlayerPos = new Vector3(player.position.x, 0, player.position.z);
-        float distance = Vector3.Distance(flatGuardPos, flatPlayerPos);
-        if (distance < detectionRadius)
-        {
-            Vector3 dirToPlayer = player.position - transform.position;
-            if (Vector3.Angle(transform.forward, dirToPlayer) < viewAngle)
+            if (guardChase.IsPlayerVisible())
             {
-                StartChase();
-            }
-        }
-    }
-    #endregion
-
-    #region Chase Behavior
-    void StartChase()
-    {
-        _currentState = AIState.Chase;
-        _hasLostPlayer = false;
-        _chaseTimer = chaseTimeout;
-        UpdatePath(player.position);
-        StartCoroutine(UpdatePathRoutine());
-    }
-
-    IEnumerator UpdatePathRoutine()
-    {
-        // Update A* path periodically while chasing.
-        while (_currentState == AIState.Chase)
-        {
-            if (player != null)
-            {
-                if (!_hasLostPlayer || Vector3.Distance(player.position, _lastKnownPlayerPos) > 1f)
-                {
-                    UpdatePath(player.position);
-                    _lastKnownPlayerPos = player.position;
-                }
-            }
-            yield return new WaitForSeconds(pathUpdateInterval);
-        }
-    }
-
-    void ChaseUpdate()
-    {
-        // Determine horizontal distance to player.
-        Vector3 flatGuard = new Vector3(transform.position.x, 0, transform.position.z);
-        Vector3 flatPlayer = new Vector3(player.position.x, 0, player.position.z);
-        float distToPlayer = Vector3.Distance(flatGuard, flatPlayer);
-        if (distToPlayer <= detectionRadius)
-        {
-            UpdatePath(player.position);
-            _hasLostPlayer = false;
-            _chaseTimer = chaseTimeout;
-        }
-        else
-        {
-            if (!_hasLostPlayer)
-            {
-                _hasLostPlayer = true;
-                _chaseTimer = chaseTimeout;
-                _lastKnownPlayerPos = player.position;
+                timeOutOfSight = 0f;
+                lastSeenPlayerPosition = player.position;
             }
             else
             {
-                _chaseTimer -= Time.deltaTime;
-                if (_chaseTimer <= 0f)
+                timeOutOfSight += Time.deltaTime;
+                if (timeOutOfSight >= returnCooldownDuration)
                 {
-                    StartReturn();
-                    return;
+                    ReturnToPatrol();
                 }
             }
         }
-
-        // If too close to player, stop moving.
-        if (distToPlayer <= stoppingDistance)
+        else if (isReturning)
         {
-            _velocity = Vector3.zero;
-            _animator.SetBool("Walk_Anim", false);
-            return;
-        }
-        FollowPath(chaseSpeed, chaseRotSpeed);
-    }
-    #endregion
-
-    #region Return Behavior
-    void StartReturn()
-    {
-        _currentState = AIState.Return;
-        int nearestIndex = GetNearestPatrolPointIndex();
-        _currentPatrolIndex = nearestIndex;
-        UpdatePath(_patrolPoints[nearestIndex]);
-    }
-
-    int GetNearestPatrolPointIndex()
-    {
-        int nearestIndex = 0;
-        float minDistance = Vector3.Distance(transform.position, _patrolPoints[0]);
-        for (int i = 1; i < _patrolPoints.Count; i++)
-        {
-            float distance = Vector3.Distance(transform.position, _patrolPoints[i]);
-            if (distance < minDistance)
-            {
-                minDistance = distance;
-                nearestIndex = i;
-            }
-        }
-        return nearestIndex;
-    }
-
-    void ReturnUpdate()
-    {
-        FollowPath(patrolSpeed, rotationSpeed);
-        if (_currentPath == null || _currentWaypointIndex >= _currentPath.Count)
-        {
-            ResumePatrol();
-        }
-    }
-
-    void ResumePatrol()
-    {
-        _currentState = AIState.Patrol;
-        if (_patrolPoints.Count > 0)
-        {
-            UpdatePath(_patrolPoints[_currentPatrolIndex]);
-        }
-    }
-    #endregion
-
-    #region Path & Movement Helpers
-    // Update the A* path from current position to the target.
-    void UpdatePath(Vector3 target)
-    {
-        _currentPath = pathfinder.FindPath(transform.position, target);
-        _currentWaypointIndex = 0;
-    }
-
-    // Follows the current path using a given speed and rotation rate.
-    void FollowPath(float moveSpeed, float rotSpeedParam)
-    {
-        if (_currentPath == null || _currentPath.Count == 0 || _currentWaypointIndex >= _currentPath.Count)
-        {
-            UpdateAnimation(false);
-            return;
-        }
-        Vector3 waypoint = _currentPath[_currentWaypointIndex];
-        // Lock Y value to ensure horizontal movement.
-        waypoint.y = transform.position.y;
-        float distanceToWaypoint = Vector3.Distance(transform.position, waypoint);
-        if (distanceToWaypoint < waypointThreshold)
-        {
-            _currentWaypointIndex++;
-            if (_currentWaypointIndex >= _currentPath.Count)
-            {
-                UpdateAnimation(false);
-                return;
-            }
-            waypoint = _currentPath[_currentWaypointIndex];
-            waypoint.y = transform.position.y;
-        }
-        MoveTowardsTarget(waypoint, moveSpeed, rotSpeedParam);
-    }
-
-    // Moves the guard toward the target while smoothly rotating.
-    void MoveTowardsTarget(Vector3 target, float moveSpeed, float rotSpeedParam)
-    {
-        Vector3 desiredDirection = (target - transform.position).normalized;
-        // Smooth out direction changes.
-        Vector3 smoothDirection = Vector3.Lerp(transform.forward, desiredDirection, 0.1f);
-        Quaternion targetRotation = Quaternion.LookRotation(smoothDirection, Vector3.up);
-        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotSpeedParam * Time.deltaTime);
-        float angleDifference = Vector3.Angle(transform.forward, desiredDirection);
-        if (angleDifference < 2f)
-        {
-            transform.position += transform.forward * moveSpeed * Time.deltaTime;
-            UpdateAnimation(true);
+            MoveToNearestWaypoint();
         }
         else
         {
-            UpdateAnimation(false);
-        }
-    }
-    #endregion
-
-    #region Animation & Debugging
-    void UpdateAnimation(bool walking)
-    {
-        if (_isWalking != walking)
-        {
-            _isWalking = walking;
-            _animator.SetBool("Walk_Anim", _isWalking);
+            Patrol();
         }
     }
 
-    void OnDrawGizmos()
+    void Patrol()
     {
-        Gizmos.color = Color.green;
-        if (_currentPath != null)
+        if (patrolWaypoints.Length == 0) return;
+
+        Vector3 targetPosition = patrolWaypoints[currentWaypointIndex].position;
+        targetPosition.y = transform.position.y;
+
+        if (currentPath.Count == 0 || Vector3.Distance(transform.position, targetPosition) <= waypointThreshold)
         {
-            for (int i = 0; i < _currentPath.Count - 1; i++)
+            currentWaypointIndex = (currentWaypointIndex + 1) % patrolWaypoints.Length;
+            targetPosition = patrolWaypoints[currentWaypointIndex].position;
+            currentPath = FindDijkstraPath(transform.position, targetPosition);
+        }
+
+        if (currentPath.Count > 0)
+        {
+            FollowPath(currentPath, patrolSpeed);
+        }
+
+        if (guardChase.IsPlayerVisible())
+        {
+            StartChasing();
+        }
+    }
+
+    void StartChasing()
+    {
+        isChasing = true;
+        anim.SetBool("Walk_Anim", true);
+        guardChase.enabled = true;
+        guardChase.StartChase();
+    }
+
+    void ReturnToPatrol()
+    {
+        isChasing = false;
+        isReturning = true;
+        anim.SetBool("Walk_Anim", true);
+        guardChase.enabled = false;
+        StartCoroutine(ReturnRoutine());
+    }
+
+    IEnumerator ReturnRoutine()
+    {
+        List<Vector3> pathToWaypoint = FindDijkstraPath(transform.position, GetNearestWaypoint());
+        if (pathToWaypoint.Count > 0)
+        {
+            FollowPath(pathToWaypoint, patrolSpeed);
+        }
+        isReturning = false;
+        StartPatrolling();
+        yield return null;
+    }
+
+    Vector3 GetNearestWaypoint()
+    {
+        float minDistance = Mathf.Infinity;
+        Vector3 nearestWaypoint = Vector3.zero;
+        foreach (Transform waypoint in patrolWaypoints)
+        {
+            float distance = Vector3.Distance(transform.position, waypoint.position);
+            if (distance < minDistance)
             {
-                Gizmos.DrawLine(_currentPath[i], _currentPath[i + 1]);
+                minDistance = distance;
+                nearestWaypoint = waypoint.position;
             }
         }
-        if (player != null)
+        return nearestWaypoint;
+    }
+
+    void MoveToNearestWaypoint()
+    {
+        Vector3 nearestWaypoint = GetNearestWaypoint();
+        List<Vector3> pathToWaypoint = FindDijkstraPath(transform.position, nearestWaypoint);
+        if (pathToWaypoint.Count > 0)
         {
-            Gizmos.color = Color.red;
-            Gizmos.DrawWireSphere(transform.position, detectionRadius);
+            FollowPath(pathToWaypoint, patrolSpeed);
+        }
+        if (Vector3.Distance(transform.position, nearestWaypoint) <= waypointThreshold)
+        {
+            isReturning = false;
+            StartPatrolling();
         }
     }
-    #endregion
 
-    // Keeps the guard grounded by raycasting downward.
-    void SnapToGround()
+    List<Vector3> FindDijkstraPath(Vector3 start, Vector3 target)
     {
-        RaycastHit hit;
-        if (Physics.Raycast(transform.position + Vector3.up * 2f, Vector3.down, out hit, 10f))
+        Node startNode = guardChase.pathfinder.gridManager.NodeFromWorldPoint(start);
+        Node targetNode = guardChase.pathfinder.gridManager.NodeFromWorldPoint(target);
+
+        List<Node> openSet = new List<Node>();
+        HashSet<Node> closedSet = new HashSet<Node>();
+        startNode.gCost = 0;
+        openSet.Add(startNode);
+
+        while (openSet.Count > 0)
         {
-            transform.position = new Vector3(transform.position.x, hit.point.y, transform.position.z);
+            Node currentNode = openSet[0];
+            for (int i = 1; i < openSet.Count; i++)
+            {
+                if (openSet[i].gCost < currentNode.gCost)
+                {
+                    currentNode = openSet[i];
+                }
+            }
+
+            openSet.Remove(currentNode);
+            closedSet.Add(currentNode);
+
+            if (currentNode == targetNode)
+            {
+                return RetracePath(startNode, targetNode);
+            }
+
+            foreach (Node neighbour in guardChase.pathfinder.gridManager.GetNeighbours(currentNode))
+            {
+                if (!neighbour.walkable || closedSet.Contains(neighbour))
+                    continue;
+
+                int newCostToNeighbour = currentNode.gCost + GetDistance(currentNode, neighbour);
+                if (newCostToNeighbour < neighbour.gCost || !openSet.Contains(neighbour))
+                {
+                    neighbour.gCost = newCostToNeighbour;
+                    neighbour.parent = currentNode;
+
+                    if (!openSet.Contains(neighbour))
+                        openSet.Add(neighbour);
+                }
+            }
         }
+        return new List<Vector3>();
+    }
+
+    List<Vector3> RetracePath(Node startNode, Node endNode)
+    {
+        List<Node> path = new List<Node>();
+        Node currentNode = endNode;
+        while (currentNode != startNode)
+        {
+            path.Add(currentNode);
+            currentNode = currentNode.parent;
+        }
+        path.Reverse();
+        List<Vector3> waypoints = new List<Vector3>();
+        foreach (Node node in path)
+        {
+            waypoints.Add(node.worldPosition);
+        }
+        return waypoints;
+    }
+
+    int GetDistance(Node nodeA, Node nodeB)
+    {
+        int dstX = Mathf.Abs(nodeA.gridX - nodeB.gridX);
+        int dstY = Mathf.Abs(nodeA.gridY - nodeB.gridY);
+
+        if (dstX > dstY)
+            return 14 * dstY + 10 * (dstX - dstY);
+        return 14 * dstX + 10 * (dstY - dstX);
+    }
+
+    void FollowPath(List<Vector3> path, float speed)
+    {
+        if (path.Count == 0) return;
+
+        Vector3 target = path[0];
+        target.y = transform.position.y;
+        Vector3 direction = (target - transform.position).normalized;
+
+        transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(direction), guardChase.rotSpeed * Time.deltaTime);
+        transform.position += direction * speed * Time.deltaTime;
+
+        if (Vector3.Distance(transform.position, target) <= waypointThreshold)
+        {
+            path.RemoveAt(0);
+        }
+    }
+
+    void MoveTowards(Vector3 target, float speed)
+    {
+        Vector3 direction = (target - transform.position).normalized;
+        transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(direction), guardChase.rotSpeed * Time.deltaTime);
+        transform.position += direction * speed * Time.deltaTime;
+    }
+
+    void StartPatrolling()
+    {
+        isChasing = false;
+        isReturning = false;
+        anim.SetBool("Walk_Anim", true);
+        currentPath.Clear();
     }
 }

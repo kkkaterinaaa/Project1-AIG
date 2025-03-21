@@ -28,7 +28,18 @@ public class GuardChase : MonoBehaviour
     private Vector3 lastPlayerPosition = Vector3.zero;
     private float waypointArrivalThreshold = 0.7f;
 
-    void Start()
+    public void Start()
+    {
+        GameObject playerObj = GameObject.FindGameObjectWithTag(playerTag);
+        if (playerObj != null)
+            player = playerObj.transform;
+        else
+            Debug.LogWarning("No GameObject found with tag '" + playerTag + "'");
+
+        anim = GetComponent<Animator>();
+    }
+
+    public void StartChase()
     {
         GameObject playerObj = GameObject.FindGameObjectWithTag(playerTag);
         if (playerObj != null)
@@ -42,7 +53,7 @@ public class GuardChase : MonoBehaviour
         StartCoroutine(WaitAndStartChase());
     }
 
-    private IEnumerator WaitAndStartChase()
+    public IEnumerator WaitAndStartChase()
     {
         yield return new WaitForSeconds(waitBeforeChase);
         canChase = true;
@@ -77,7 +88,7 @@ public class GuardChase : MonoBehaviour
             anim.SetBool("Walk_Anim", false);
     }
 
-    private bool IsPlayerVisible()
+    public bool IsPlayerVisible()
     {
         Vector3 dirToPlayer = (player.position - transform.position).normalized;
         float angle = Vector3.Angle(transform.forward, dirToPlayer);

@@ -2502,8 +2502,7 @@ GameObject:
   - component: {fileID: 7001451046519971031}
   - component: {fileID: 973653970079267073}
   - component: {fileID: 4365704487975801080}
-  - component: {fileID: 7823132191619205572}
-  - component: {fileID: 3447881943117816400}
+  - component: {fileID: 8111111429960173930}
   m_Layer: 0
   m_Name: Guard
   m_TagString: Untagged
@@ -2555,7 +2554,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7163075118985377439}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fa2d5c1735e0142d9a7c8d6afb104d3b, type: 3}
   m_Name: 
@@ -2568,7 +2567,7 @@ MonoBehaviour:
   rotSpeed: 120
   stoppingDistance: 3
   waitBeforeChase: 4
---- !u!114 &7823132191619205572
+--- !u!114 &8111111429960173930
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2577,51 +2576,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 7163075118985377439}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b75c7f31c498b354babfc94deb1288fb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  pathfinder: {fileID: 0}
-  gridManager: {fileID: 0}
-  movementSpeed: 3.5
-  rotationSpeed: 10
-  waypointThreshold: 1
-  player: {fileID: 0}
-  detectionRadius: 5
-  viewAngle: 45
-  chaseTimeout: 5
-  obstacleDetectionDistance: 1
-  obstacleMask:
-    serializedVersion: 2
-    m_Bits: 64
-  avoidanceRotation: 30
-  waypoints: []
---- !u!114 &3447881943117816400
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7163075118985377439}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 04d6c9fe9d2dac34c8c8261f74e26858, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  waypoints: []
-  pathfinder: {fileID: 0}
-  pathUpdateInterval: 1
-  waypointThreshold: 0.5
-  chaseTimeout: 5
-  playerTag: Player
-  player: {fileID: 0}
-  detectionRadius: 10
-  viewAngle: 45
+  patrolWaypoints: []
   patrolSpeed: 3.5
-  chaseSpeed: 3
-  rotationSpeed: 5
-  chaseRotSpeed: 120
-  stoppingDistance: 3
-  homeArrivalThreshold: 1
+  waypointThreshold: 0.7
+  returnCooldownDuration: 5
+  guardChase: {fileID: 4365704487975801080}
+  anim: {fileID: 973653970079267073}
 --- !u!1 &7246492691536284944
 GameObject:
   m_ObjectHideFlags: 0
