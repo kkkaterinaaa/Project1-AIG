@@ -8,6 +8,7 @@ TagManager:
   - Security
   - Enemy
   - Wall
+  - Light
   layers:
   - Default
   - TransparentFX

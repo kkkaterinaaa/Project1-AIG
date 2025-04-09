@@ -93,14 +93,28 @@ public class GuardChase : MonoBehaviour
         Vector3 dirToPlayer = (player.position - transform.position).normalized;
         float angle = Vector3.Angle(transform.forward, dirToPlayer);
 
+        PlayerVisibility visibility = player.GetComponent<PlayerVisibility>();
+
         if (angle < fieldOfViewAngle * 0.5f)
         {
             RaycastHit hit;
             if (Physics.Raycast(transform.position, dirToPlayer, out hit))
-                return (hit.transform == player);
+            {
+                bool isVisible = hit.transform == player;
+
+                if (visibility != null)
+                    visibility.SetInFOV(isVisible);
+
+                return isVisible;
+            }
         }
+
+        if (visibility != null)
+            visibility.SetInFOV(false);
+
         return false;
     }
+
 
     private void FollowPath()
     {
