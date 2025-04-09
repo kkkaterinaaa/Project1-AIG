@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Guard
   - Security
+  - Light
   layers:
   - Default
   - TransparentFX

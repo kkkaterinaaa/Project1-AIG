@@ -56,6 +56,12 @@ public class GuardController : MonoBehaviour
         else
         {
             Patrol();
+            PlayerVisibility visibility = player.GetComponent<PlayerVisibility>();
+            if (visibility != null && visibility.GetSuspicionScore() >= 80f)
+            {
+                Debug.Log("Guard is suspicious enough to chase!");
+                StartChasing();
+            }
         }
     }
 
