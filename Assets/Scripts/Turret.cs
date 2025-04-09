@@ -15,17 +15,31 @@ public class TurretAI : MonoBehaviour
 
     // Rotation Settings
     public float rotationSpeed = 5f;  // Rotation speed of the turret
+    public float fieldOfViewAngle = 270f;
 
     private float lastFireTime;
+
+    private PlayerVisibility playerVisibility;
+
+    public float suspicionThreshold = 20f;
+
+    private void Start()
+    {
+        if (player == null)
+            player = GameObject.FindGameObjectWithTag("Player")?.transform;
+
+        if (player != null)
+            playerVisibility = player.GetComponent<PlayerVisibility>();
+    }
 
     private void Update()
     {
         if (Time.time - lastFireTime >= fireRate)
         {
-            if (IsPlayerInRange() && IsPlayerVisible())
+            if (IsPlayerInRange() && IsPlayerVisible() && IsSuspicionHighEnough())
             {
                 FireProjectileAtPlayer();
-                lastFireTime = Time.time;  
+                lastFireTime = Time.time;
             }
             else if (playerCloaked || IsPlayerBehindCover())
             {
@@ -39,23 +53,27 @@ public class TurretAI : MonoBehaviour
         }
     }
 
+
     private bool IsPlayerInRange()
     {
         return Vector3.Distance(transform.position, player.position) <= detectionRange;
     }
 
-    private bool IsPlayerVisible()
+    public bool IsPlayerVisible()
     {
-        RaycastHit hit;
-        Vector3 direction = player.position - transform.position;
-        if (Physics.Raycast(transform.position, direction, out hit, detectionRange))
+        Vector3 dirToPlayer = (player.position - transform.position).normalized;
+        float angle = Vector3.Angle(transform.forward, dirToPlayer);
+
+        if (angle < fieldOfViewAngle * 0.5f)
         {
-            if (hit.transform == player)
+            RaycastHit hit;
+            if (Physics.Raycast(transform.position, dirToPlayer, out hit, detectionRange))
             {
-                return true;  
+                return hit.transform == player;
             }
         }
-        return false; 
+
+        return false;
     }
 
     private bool IsPlayerBehindCover()
@@ -103,5 +121,11 @@ public class TurretAI : MonoBehaviour
         Vector3 direction = player.position - transform.position;
         Quaternion targetRotation = Quaternion.LookRotation(direction);
         transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+    }
+
+    private bool IsSuspicionHighEnough()
+    {
+        if (playerVisibility == null) return false;
+        return playerVisibility.GetSuspicionScore() >= suspicionThreshold;
     }
 }

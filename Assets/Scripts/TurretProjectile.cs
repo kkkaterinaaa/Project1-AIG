@@ -16,8 +16,8 @@ public class Projectile : MonoBehaviour
         if (collision.gameObject.CompareTag("Player"))
         {
             // If the projectile hits the player, apply damage (you can add your own damage logic here)
-            //<gameObject>.GetComponent<HealthPoints>()?.TakeDamage(damage);
-            
+            collision.gameObject.GetComponent<HealthPoints>()?.TakeDamage((int)damage);
+
             // Optionally, instantiate an impact effect
             if (impactEffect != null)
             {

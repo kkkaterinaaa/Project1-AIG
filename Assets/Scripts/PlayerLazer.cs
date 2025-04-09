@@ -47,7 +47,7 @@ public class PlayerLaser : MonoBehaviour
             if (hit.transform.CompareTag("Guard"))
             {
                 // Apply damage to the object hit by the laser
-                //<gameObject>.GetComponent<HealthPoints>()?.TakeDamage(laserDamage);
+                hit.transform.GetComponent<HealthPoints>()?.TakeDamage((int)laserDamage);
             }
 
             

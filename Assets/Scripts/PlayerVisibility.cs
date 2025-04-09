@@ -28,7 +28,9 @@ public class PlayerVisibility : MonoBehaviour
 
     void Update()
     {
+        SetInFOV(IsVisibleToClosestGuard());
         UpdateSuspicion();
+
     }
 
     public void SetInFOV(bool inFOV)
@@ -64,21 +66,69 @@ public class PlayerVisibility : MonoBehaviour
         }
     }
 
-    float GetClosestGuardDistanceFactor()
+    bool IsVisibleToClosestGuard()
     {
-        GuardChase[] guards = FindObjectsOfType<GuardChase>();
+        GameObject[] guards = GameObject.FindGameObjectsWithTag("Guard");
         float closest = float.MaxValue;
+        Transform closestGuard = null;
 
-        foreach (var guard in guards)
+        foreach (GameObject guard in guards)
         {
             float dist = Vector3.Distance(transform.position, guard.transform.position);
-            if (dist < closest) closest = dist;
+            if (dist < closest)
+            {
+                closest = dist;
+                closestGuard = guard.transform;
+            }
         }
 
-        if (closest < 5f) return 1f;        // Very close
-        else if (closest < 10f) return 0.6f; // Mid
-        else return 0.2f;                   // Far
+        if (closestGuard != null)
+        {
+            Vector3 dirToPlayer = (transform.position - closestGuard.position).normalized;
+            float angle = Vector3.Angle(closestGuard.forward, dirToPlayer);
+
+            float fov = 270f;
+            float detectionRange = 15f;
+
+            if (angle < fov * 0.5f)
+            {
+                RaycastHit hit;
+                if (Physics.Raycast(closestGuard.position, dirToPlayer, out hit, detectionRange))
+                {
+                    return hit.transform == transform;
+                }
+            }
+        }
+
+        return false;
     }
+
+
+    float GetClosestGuardDistanceFactor()
+    {
+        GameObject[] guards = GameObject.FindGameObjectsWithTag("Guard");
+        float closest = float.MaxValue;
+
+        foreach (GameObject guard in guards)
+        {
+            Vector3 playerPos = transform.position;
+            Vector3 guardPos = guard.transform.position;
+
+            playerPos.y = guardPos.y;
+            float dist = Vector3.Distance(playerPos, guardPos);
+
+            if (debugMode)
+                Debug.Log($"Distance to {guard.name}: {dist}");
+
+            if (dist < closest)
+                closest = dist;
+        }
+
+        if (closest < 5f) return 1f;
+        else if (closest < 10f) return 0.6f;
+        else return 0.2f;
+    }
+
 
     public float GetSuspicionScore() => suspicion;
 
