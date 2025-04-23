@@ -9,6 +9,7 @@ TagManager:
   - Enemy
   - Wall
   - Light
+  - DeadGuard
   layers:
   - Default
   - TransparentFX

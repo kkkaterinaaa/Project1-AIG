@@ -2504,6 +2504,8 @@ GameObject:
   - component: {fileID: 4365704487975801080}
   - component: {fileID: 8111111429960173930}
   - component: {fileID: 4937304556495985806}
+  - component: {fileID: 3073640982697732004}
+  - component: {fileID: 4845207447741254232}
   m_Layer: 0
   m_Name: Guard
   m_TagString: Guard
@@ -2564,6 +2566,7 @@ MonoBehaviour:
   pathUpdateInterval: 1
   playerTag: Player
   fieldOfViewAngle: 270
+  detectionRange: 10
   speed: 3
   rotSpeed: 120
   stoppingDistance: 3
@@ -2575,7 +2578,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7163075118985377439}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 04d6c9fe9d2dac34c8c8261f74e26858, type: 3}
   m_Name: 
@@ -2607,6 +2610,40 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.14, y: 0.14, z: 0.14}
   m_Center: {x: 0, y: 0.05, z: 0}
+--- !u!114 &3073640982697732004
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7163075118985377439}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38e0363d852f1964d869a1bb1527ccca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  patrolWaypoints: []
+  patrolSpeed: 2
+  waypointThreshold: 0.7
+  returnCooldownDuration: 5
+  patrolPlanner: {fileID: 0}
+  useGeneticPath: 0
+  guardChase: {fileID: 0}
+  anim: {fileID: 0}
+--- !u!114 &4845207447741254232
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7163075118985377439}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 430deb26d487fd842b4df6508f063b6c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  priorThreatProbability: 0.1
+  thresholdToChase: 0.8
 --- !u!1 &7246492691536284944
 GameObject:
   m_ObjectHideFlags: 0

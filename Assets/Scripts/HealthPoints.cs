@@ -1,4 +1,6 @@
 using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
 
 public class HealthPoints : MonoBehaviour
 {
@@ -43,7 +45,23 @@ public class HealthPoints : MonoBehaviour
         if (isEnemy)
         {
             Debug.Log($"{gameObject.name} (Enemy) died!");
-            Destroy(gameObject);
+            GameObject corpse = new GameObject("DeadGuardMarker");
+            corpse.transform.position = transform.position;
+            corpse.tag = "DeadGuard";
+            var model = GetComponent<BayesianThreatModel>();
+            model.ApplyStrongEvidence(0.7f, "Murder");
+            GAguard guard = GetComponent<GAguard>();
+            if (guard != null && guard.patrolPlanner != null)
+            {
+                Debug.Log($"[GA] Notifying GeneticAlgorithm to remove {gameObject.name}.");
+                guard.patrolPlanner.RemoveGuard(gameObject);
+            }
+            else
+            {
+                Debug.LogWarning($"[GA] No GuardController or planner found on {gameObject.name}.");
+            }
+
+            StartCoroutine(DelayedDestroy());
         }
         else
         {
@@ -68,4 +86,11 @@ public class HealthPoints : MonoBehaviour
 
     public int GetCurrentHealth() => currentHealth;
     public int GetMaxHealth() => maxHealth;
+
+    IEnumerator DelayedDestroy()
+    {
+        yield return new WaitForSeconds(0.1f); 
+        Destroy(gameObject);
+    }
+
 }

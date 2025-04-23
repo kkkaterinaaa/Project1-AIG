@@ -9,9 +9,9 @@ public class AStarPathfinder : MonoBehaviour
         gridManager = FindObjectOfType<GridManager>();
     }
     
-    public List<Vector3> FindPath(Vector3 startPos, Vector3 targetPos){
-        Node startNode = gridManager.NodeFromWorldPoint(startPos);
-        Node targetNode = gridManager.NodeFromWorldPoint(targetPos);
+    public List<Vector3> FindPath(Vector3 start, Vector3 end){
+        Node startNode = gridManager.NodeFromWorldPoint(start);
+        Node targetNode = gridManager.NodeFromWorldPoint(end);
         
         List<Node> openSet = new List<Node>();
         HashSet<Node> closedSet = new HashSet<Node>();

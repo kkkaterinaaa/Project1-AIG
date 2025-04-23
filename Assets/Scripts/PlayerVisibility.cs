@@ -20,6 +20,7 @@ public class PlayerVisibility : MonoBehaviour
     private Rigidbody rb;
     private float timeInFOV = 0f;
     private bool isInFOV = false;
+    private float broadcastTimer = 0f;
 
     void Start()
     {
@@ -30,6 +31,13 @@ public class PlayerVisibility : MonoBehaviour
     {
         SetInFOV(IsVisibleToClosestGuard());
         UpdateSuspicion();
+
+        broadcastTimer += Time.deltaTime;
+        if (broadcastTimer >= 0.5f)
+        {
+            BroadcastSuspicionEvidence();
+            broadcastTimer = 0f;
+        }
 
     }
 
@@ -60,10 +68,10 @@ public class PlayerVisibility : MonoBehaviour
 
         suspicion = Mathf.Clamp(suspicion, 0, maxSuspicion);
 
-        if (debugMode)
-        {
-            Debug.Log($"Suspicion: {suspicion:F1} (Light: {lightFactor}, Move: {movementFactor}, Distance: {distanceFactor}, FOV: {fovFactor})");
-        }
+        //if (debugMode)
+        //{
+        //    Debug.Log($"Suspicion: {suspicion:F1} (Light: {lightFactor}, Move: {movementFactor}, Distance: {distanceFactor}, FOV: {fovFactor})");
+        //}
     }
 
     bool IsVisibleToClosestGuard()
@@ -117,8 +125,8 @@ public class PlayerVisibility : MonoBehaviour
             playerPos.y = guardPos.y;
             float dist = Vector3.Distance(playerPos, guardPos);
 
-            if (debugMode)
-                Debug.Log($"Distance to {guard.name}: {dist}");
+            //if (debugMode)
+            //    Debug.Log($"Distance to {guard.name}: {dist}");
 
             if (dist < closest)
                 closest = dist;
@@ -156,4 +164,51 @@ public class PlayerVisibility : MonoBehaviour
         if (other.CompareTag("Light"))
             StartCoroutine(FadeLightLevel(0.2f));
     }
+
+    public void BroadcastSuspicionEvidence()
+    {
+        GameObject[] guards = GameObject.FindGameObjectsWithTag("Guard");
+        foreach (GameObject guard in guards)
+        {
+            var model = guard.GetComponent<BayesianThreatModel>();
+            if (model == null) continue;
+
+            float speed = rb.velocity.magnitude;
+            bool isShooting = Input.GetKey(KeyCode.F);
+
+            // Base evidence types
+            var visibility = new ThreatEvidence(isInFOV ? 0.9f : 0.2f, 0.3f, "Visibility");
+            var noise = new ThreatEvidence(GetNoiseLikelihood(), 1f - GetNoiseLikelihood(), "Noise");
+
+            model.UpdateBelief(visibility);
+            model.UpdateBelief(noise);
+
+            if (isShooting)
+            {
+                var gunshot = new ThreatEvidence(0.95f, 0.05f, "Gunshot");
+                model.UpdateBelief(gunshot);
+            }
+        }
+    }
+
+
+
+    float GetNoiseLikelihood()
+    {
+        bool isShooting = Input.GetKey(KeyCode.F); // rough example
+        float speed = rb.velocity.magnitude;
+
+        if (isShooting) return 0.95f;
+        if (speed > 2f) return 0.8f;
+        if (speed > 0.5f) return 0.4f;
+        return 0.1f;
+    }
+
+    float Average(params float[] values)
+    {
+        float sum = 0f;
+        foreach (float v in values) sum += v;
+        return sum / values.Length;
+    }
+
 }

@@ -1485,7 +1485,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 27.5
+  m_fontSize: 18
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -5150,7 +5150,7 @@ MonoBehaviour:
   suspicionDecreaseRate: 5
   maxSuspicion: 100
   movingSpeedThreshold: 0.1
-  debugMode: 0
+  debugMode: 1
 --- !u!54 &479358180
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -5629,6 +5629,9 @@ GameObject:
   - component: {fileID: 532574282}
   - component: {fileID: 532574281}
   - component: {fileID: 532574283}
+  - component: {fileID: 532574284}
+  - component: {fileID: 532574285}
+  - component: {fileID: 532574286}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -5687,6 +5690,79 @@ MonoBehaviour:
   fullHealthColor: {r: 0, g: 0.764151, b: 0, a: 1}
   midHealthColor: {r: 1, g: 0.9238702, b: 0, a: 1}
   lowHealthColor: {r: 1, g: 0, b: 0, a: 1}
+--- !u!114 &532574284
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 532574280}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0c532c3ba06d23c409d86d49dcb7f1d0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  allWaypoints:
+  - {fileID: 624229523}
+  - {fileID: 1956137970}
+  - {fileID: 1215125157}
+  - {fileID: 1604188480}
+  - {fileID: 844915765}
+  - {fileID: 862053654}
+  - {fileID: 1136303020}
+  - {fileID: 1373081464}
+  - {fileID: 963058535}
+  - {fileID: 1338506645}
+  - {fileID: 683100440}
+  - {fileID: 1937992551}
+  - {fileID: 257896740}
+  - {fileID: 1919073972}
+  - {fileID: 1911903043}
+  - {fileID: 238961606}
+  - {fileID: 948484366}
+  - {fileID: 1252599721}
+  - {fileID: 123669862}
+  guards:
+  - {fileID: 1406038034}
+  - {fileID: 1689023231}
+  - {fileID: 1344423683}
+  - {fileID: 1441300472}
+  - {fileID: 619034231}
+  gridManager: {fileID: 1156069830}
+  pathfinderOwner: {fileID: 221605978}
+  populationSize: 30
+  generations: 100
+  mutationRate: 0.1
+  delayBetweenGenerations: 0.1
+--- !u!114 &532574285
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 532574280}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e3f707ee377831498e194e926743c36, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  patrolPlanner: {fileID: 532574284}
+  pathfinderOwner: {fileID: 221605978}
+  guards: []
+--- !u!114 &532574286
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 532574280}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f02e77e6f393d451dbdf46c441d2e10a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  investigationModel: {fileID: 5022602860645237092, guid: 2b32376927d614f5b80567714849b3f6, type: 3}
+  gridManager: {fileID: 1156069830}
 --- !u!1001 &534855385
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6434,6 +6510,26 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 139809067}
     m_Modifications:
+    - target: {fileID: 3073640982697732004, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
+      propertyPath: anim
+      value: 
+      objectReference: {fileID: 619034236}
+    - target: {fileID: 3073640982697732004, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
+      propertyPath: rlAgent
+      value: 
+      objectReference: {fileID: 532574286}
+    - target: {fileID: 3073640982697732004, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
+      propertyPath: guardChase
+      value: 
+      objectReference: {fileID: 619034235}
+    - target: {fileID: 3073640982697732004, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
+      propertyPath: patrolPlanner
+      value: 
+      objectReference: {fileID: 532574284}
+    - target: {fileID: 3073640982697732004, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
+      propertyPath: useGeneticPath
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3447881943117816400, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
       propertyPath: player
       value: 
@@ -6446,6 +6542,10 @@ PrefabInstance:
       propertyPath: pathfinder
       value: 
       objectReference: {fileID: 221605978}
+    - target: {fileID: 4845207447741254232, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
+      propertyPath: debug
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7001451046519971031, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
       propertyPath: m_LocalPosition.x
       value: 66.13363
@@ -6590,6 +6690,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 100
   isEnemy: 1
+--- !u!114 &619034235 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4365704487975801080, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
+  m_PrefabInstance: {fileID: 619034229}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 619034231}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa2d5c1735e0142d9a7c8d6afb104d3b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!95 &619034236 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 973653970079267073, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
+  m_PrefabInstance: {fileID: 619034229}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &624229522
 GameObject:
   m_ObjectHideFlags: 0
@@ -12077,6 +12193,8 @@ MonoBehaviour:
     m_Bits: 64
   gridWorldSize: {x: 150, y: 150}
   nodeRadius: 1
+  gridSizeX: 0
+  gridSizeY: 0
 --- !u!4 &1156069831
 Transform:
   m_ObjectHideFlags: 0
@@ -13982,6 +14100,26 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 139809067}
     m_Modifications:
+    - target: {fileID: 3073640982697732004, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
+      propertyPath: anim
+      value: 
+      objectReference: {fileID: 1344423688}
+    - target: {fileID: 3073640982697732004, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
+      propertyPath: rlAgent
+      value: 
+      objectReference: {fileID: 532574286}
+    - target: {fileID: 3073640982697732004, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
+      propertyPath: guardChase
+      value: 
+      objectReference: {fileID: 1344423687}
+    - target: {fileID: 3073640982697732004, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
+      propertyPath: patrolPlanner
+      value: 
+      objectReference: {fileID: 532574284}
+    - target: {fileID: 3073640982697732004, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
+      propertyPath: useGeneticPath
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3447881943117816400, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
       propertyPath: player
       value: 
@@ -14026,6 +14164,10 @@ PrefabInstance:
       propertyPath: pathfinder
       value: 
       objectReference: {fileID: 221605978}
+    - target: {fileID: 4845207447741254232, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
+      propertyPath: debug
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7001451046519971031, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
       propertyPath: m_LocalPosition.x
       value: 50.872955
@@ -14170,6 +14312,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 100
   isEnemy: 1
+--- !u!114 &1344423687 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4365704487975801080, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
+  m_PrefabInstance: {fileID: 1344423681}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1344423683}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa2d5c1735e0142d9a7c8d6afb104d3b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!95 &1344423688 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 973653970079267073, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
+  m_PrefabInstance: {fileID: 1344423681}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1350252555
 GameObject:
   m_ObjectHideFlags: 0
@@ -15276,6 +15434,26 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 139809067}
     m_Modifications:
+    - target: {fileID: 3073640982697732004, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
+      propertyPath: anim
+      value: 
+      objectReference: {fileID: 1406038038}
+    - target: {fileID: 3073640982697732004, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
+      propertyPath: rlAgent
+      value: 
+      objectReference: {fileID: 532574286}
+    - target: {fileID: 3073640982697732004, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
+      propertyPath: guardChase
+      value: 
+      objectReference: {fileID: 1406038033}
+    - target: {fileID: 3073640982697732004, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
+      propertyPath: patrolPlanner
+      value: 
+      objectReference: {fileID: 532574284}
+    - target: {fileID: 3073640982697732004, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
+      propertyPath: useGeneticPath
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3447881943117816400, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
       propertyPath: player
       value: 
@@ -15320,6 +15498,10 @@ PrefabInstance:
       propertyPath: pathfinder
       value: 
       objectReference: {fileID: 221605978}
+    - target: {fileID: 4845207447741254232, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
+      propertyPath: debug
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7001451046519971031, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.7271824
@@ -15475,6 +15657,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 100
   isEnemy: 1
+--- !u!95 &1406038038 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 973653970079267073, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
+  m_PrefabInstance: {fileID: 1406038031}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1427982499
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -15693,6 +15880,26 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 139809067}
     m_Modifications:
+    - target: {fileID: 3073640982697732004, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
+      propertyPath: anim
+      value: 
+      objectReference: {fileID: 1441300477}
+    - target: {fileID: 3073640982697732004, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
+      propertyPath: rlAgent
+      value: 
+      objectReference: {fileID: 532574286}
+    - target: {fileID: 3073640982697732004, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
+      propertyPath: guardChase
+      value: 
+      objectReference: {fileID: 1441300476}
+    - target: {fileID: 3073640982697732004, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
+      propertyPath: patrolPlanner
+      value: 
+      objectReference: {fileID: 532574284}
+    - target: {fileID: 3073640982697732004, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
+      propertyPath: useGeneticPath
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3447881943117816400, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
       propertyPath: player
       value: 
@@ -15729,6 +15936,10 @@ PrefabInstance:
       propertyPath: pathfinder
       value: 
       objectReference: {fileID: 221605978}
+    - target: {fileID: 4845207447741254232, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
+      propertyPath: debug
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7001451046519971031, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
       propertyPath: m_LocalPosition.x
       value: 57.522385
@@ -15861,6 +16072,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 100
   isEnemy: 1
+--- !u!114 &1441300476 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4365704487975801080, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
+  m_PrefabInstance: {fileID: 1441300470}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1441300472}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa2d5c1735e0142d9a7c8d6afb104d3b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!95 &1441300477 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 973653970079267073, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
+  m_PrefabInstance: {fileID: 1441300470}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1441939405
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -18479,6 +18706,26 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 139809067}
     m_Modifications:
+    - target: {fileID: 3073640982697732004, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
+      propertyPath: anim
+      value: 
+      objectReference: {fileID: 1689023235}
+    - target: {fileID: 3073640982697732004, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
+      propertyPath: rlAgent
+      value: 
+      objectReference: {fileID: 532574286}
+    - target: {fileID: 3073640982697732004, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
+      propertyPath: guardChase
+      value: 
+      objectReference: {fileID: 1689023230}
+    - target: {fileID: 3073640982697732004, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
+      propertyPath: patrolPlanner
+      value: 
+      objectReference: {fileID: 532574284}
+    - target: {fileID: 3073640982697732004, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
+      propertyPath: useGeneticPath
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3447881943117816400, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
       propertyPath: player
       value: 
@@ -18527,6 +18774,10 @@ PrefabInstance:
       propertyPath: pathfinder
       value: 
       objectReference: {fileID: 221605978}
+    - target: {fileID: 4845207447741254232, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
+      propertyPath: debug
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7001451046519971031, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
       propertyPath: m_LocalPosition.x
       value: -37.935997
@@ -18686,6 +18937,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 100
   isEnemy: 1
+--- !u!95 &1689023235 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 973653970079267073, guid: 5752cb772d609f04ca5764b6b95d937d, type: 3}
+  m_PrefabInstance: {fileID: 1689023228}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1690607940
 PrefabInstance:
   m_ObjectHideFlags: 0
