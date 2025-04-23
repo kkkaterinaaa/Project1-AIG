@@ -106,8 +106,7 @@ public class GuardChase : MonoBehaviour
         return false;
     }
 
-
-
+    
     private void FollowPath()
     {
         if (currentWaypointIndex >= currentPath.Count)

@@ -6,11 +6,10 @@ public class GridManager : MonoBehaviour
     public LayerMask unwalkableMask; 
     public Vector2 gridWorldSize;
     public float nodeRadius; 
-
+    [HideInInspector] public int gridSizeX, gridSizeY;
     Node[,] grid;
 
     float nodeDiameter;
-    int gridSizeX, gridSizeY;
     
     void Awake(){
         nodeDiameter = nodeRadius * 2;
@@ -59,8 +58,6 @@ public class GridManager : MonoBehaviour
     }
     
     // visualize the grid in the editor
-    
-    
     void OnDrawGizmos() {
         Gizmos.DrawWireCube(transform.position, new Vector3(gridWorldSize.x, 1, gridWorldSize.y));
         if (grid != null) {
@@ -77,5 +74,14 @@ public class GridManager : MonoBehaviour
         return worldBottomLeft +
             Vector3.right * (x * nodeDiameter + nodeRadius) +
             Vector3.forward * (y * nodeDiameter + nodeRadius);
+    }
+    
+    public bool[,] GetWalkableArray()
+    {
+        bool[,] arr = new bool[gridSizeX, gridSizeY];
+        for (int x = 0; x < gridSizeX; x++)
+        for (int y = 0; y < gridSizeY; y++)
+            arr[x, y] = grid[x, y].walkable;
+        return arr;
     }
 }

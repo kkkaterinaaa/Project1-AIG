@@ -113,7 +113,6 @@ public class TurretAI : MonoBehaviour
 
     private void PauseFiring()
     {
-        Debug.Log("Firing paused, player is cloaked or behind cover");
     }
 
     private void RotateTurretTowardsPlayer()

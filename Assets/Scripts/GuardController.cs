@@ -13,14 +13,22 @@ public class GuardController : MonoBehaviour
     [Header("Chase Settings")]
     public GuardChase guardChase;
 
+    [Header("Investigation Settings")]
+    public RLAgent rlAgent;
+    public float investigationThreshold = 40f;
+    public float chaseThreshold = 80f;
+
     [Header("Animation")]
     public Animator anim;
+
+    // state flags
+    private bool isChasing = false;
+    private bool isReturning = false;
+    private bool isInvestigating = false;
 
     private int currentWaypointIndex = 0;
     private Transform player;
     private Vector3 lastSeenPlayerPosition;
-    private bool isChasing = false;
-    private bool isReturning = false;
     private float timeOutOfSight = 0f;
     private List<Vector3> currentPath = new List<Vector3>();
 
@@ -33,8 +41,10 @@ public class GuardController : MonoBehaviour
 
     void Update()
     {
+        float suspicion = player.GetComponent<PlayerVisibility>().GetSuspicionScore();
         if (isChasing)
         {
+            // Chase Logic
             if (guardChase.IsPlayerVisible())
             {
                 timeOutOfSight = 0f;
@@ -53,17 +63,43 @@ public class GuardController : MonoBehaviour
         {
             MoveToNearestWaypoint();
         }
+        else if (isInvestigating)
+        {
+            // escalate to chase
+            if (suspicion >= chaseThreshold && guardChase.IsPlayerVisible())
+            {
+                Debug.Log($"[{gameObject.name}] Investigation escalated → CHASE");
+                isInvestigating = false;
+                StartChasing();
+                return;
+            }
+            // fall back to return
+            if (suspicion < investigationThreshold)
+            {
+                Debug.Log($"[{gameObject.name}] Investigation dropped → RETURN");
+                isInvestigating = false;
+                ReturnToPatrol();
+                return;
+            }
+            Investigate();
+        }
         else
         {
             Patrol();
-            PlayerVisibility visibility = player.GetComponent<PlayerVisibility>();
-            if (visibility != null && visibility.GetSuspicionScore() >= 80f)
+            // start investigation
+            if (suspicion >= investigationThreshold && suspicion < chaseThreshold)
             {
-                Debug.Log("Guard is suspicious enough to chase!");
+                Debug.Log($"[{gameObject.name}] Suspicion mid-range → INVESTIGATE");
+                StartInvestigation();
+            }
+            else if (suspicion >= chaseThreshold && guardChase.IsPlayerVisible())
+            {
+                Debug.Log($"[{gameObject.name}] Suspicion high → CHASE");
                 StartChasing();
             }
         }
     }
+
 
     void Patrol()
     {
@@ -86,24 +122,52 @@ public class GuardController : MonoBehaviour
 
         if (guardChase.IsPlayerVisible())
         {
+            Debug.Log($"[{gameObject.name}] Patrol → Player spotted → CHASE");
             StartChasing();
         }
+    }
+    
+    void StartInvestigation()
+    {
+        isInvestigating = true;
+        lastSeenPlayerPosition = player.position;
+        anim.SetBool("Walk_Anim", true);
+        Vector3 nextNode = rlAgent.GetNextInvestigationNode(transform.position, lastSeenPlayerPosition);
+        Debug.Log($"[{gameObject.name}] Investigation target: {nextNode}");
+        currentPath = FindDijkstraPath(transform.position, nextNode);
+    }
+    
+    void Investigate()
+    {
+        if (currentPath == null || currentPath.Count == 0)
+        {
+            Debug.Log($"[{gameObject.name}] Investigation complete → RETURN");
+            isInvestigating = false;
+            ReturnToPatrol();
+            return;
+        }
+        Debug.Log($"[{gameObject.name}] Investigating: moving to {currentPath[0]}");
+        FollowPath(currentPath, patrolSpeed);
     }
 
     void StartChasing()
     {
         isChasing = true;
+        isInvestigating = false;
         anim.SetBool("Walk_Anim", true);
         guardChase.enabled = true;
         guardChase.StartChase();
+        Debug.Log($"[{gameObject.name}] State: CHASE");
     }
 
     void ReturnToPatrol()
     {
         isChasing = false;
+        isInvestigating = false;
         isReturning = true;
         anim.SetBool("Walk_Anim", true);
         guardChase.enabled = false;
+        Debug.Log($"[{gameObject.name}] State: RETURN_TO_PATROL");
         StartCoroutine(ReturnRoutine());
     }
 
